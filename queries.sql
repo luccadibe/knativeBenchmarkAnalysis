@@ -90,10 +90,28 @@ ORDER BY
     processing_time_seconds DESC
 LIMIT 10;
 
+-- compare timestamps of fastest events and get the rps of the corresponding experiment
+
+SELECT 
+    r.event_id,
+    r.timestamp AS request_timestamp,
+    e.timestamp AS event_timestamp,
+    ex.rps AS experiment_rps
+FROM 
+    requests r
+JOIN 
+    events e ON r.event_id = e.event_id
+JOIN 
+    experiments ex ON r.experiment_id = ex.id
+ORDER BY 
+    processing_time_seconds ASC LIMIT 10;
+
+    
 -- were all events processed?
 
 SELECT 
     ex.id AS experiment_id,
+    ex.scenario AS scenario,
     ex.rps AS requests_per_second,
     COUNT(r.event_id) AS total_requests,
     SUM(CASE WHEN e.event_id IS NOT NULL THEN 1 ELSE 0 END) AS processed_events,
@@ -105,7 +123,7 @@ JOIN
 LEFT JOIN 
     events e ON r.event_id = e.event_id
 GROUP BY 
-    ex.id, ex.rps;
+    ex.id, ex.rps, ex.scenario;
 
 /* 
 result for preliminary run:
@@ -143,8 +161,7 @@ SELECT
 FROM 
     pod_metrics p
 WHERE 
-    (p.pod_name LIKE '%event-source%' 
-     OR p.pod_name LIKE '%workload-generator%')
+    (p.pod_name LIKE '%workload-generator%')
    -- AND p.timestamp BETWEEN 'start_time' AND 'end_time'
 GROUP BY 
     p.node_name;

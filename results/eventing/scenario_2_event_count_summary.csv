@@ -1,0 +1,5 @@
+Triggers,Total Unique Events,Expected Count per Event,Events with Expected Count,Events with Mismatched Count,Total Event Completions
+10,29621,10,25680,3941,271378
+4,74291,4,72510,1781,294035
+6,31538,6,23884,7654,166187
+8,39490,8,35513,3977,301132
